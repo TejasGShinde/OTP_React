@@ -72,6 +72,7 @@ function Progress() {
 
 function Stopwatch(){
     const [start,setStart]  = useState(0);
+    const [tracker,setTracker] = useState();
     const [min,setMin] = useState(10);
     const [stop,setStop] = useState(true)
     const [timer,setTimer] = useState();
@@ -80,7 +81,8 @@ function Stopwatch(){
     const handleChange = (e)=>{
       
       setMin(e.target.value)
-      pause()
+      setStop(true);
+      clearInterval(timer)
       setStart(0)
     }
     const format = (start)=>{
@@ -93,9 +95,9 @@ function Stopwatch(){
     }
     const startWatch = (e)=>{
       console.log((start/(1000*60)))
+      setTracker(Date.now()-start)
      setStop(false);
-     
-       
+         
     }
     const pause = (e)=>{
       setPauses((prev)=>[...prev,start])
@@ -103,12 +105,13 @@ function Stopwatch(){
       clearInterval(timer)
     }
     useEffect(()=>{
-     
+      console.log(Date.now())
       if(!stop){
        
         const timer =  setInterval(() => {
           setStart(prev=>{
             if(isCountDown && Math.floor(min*60*1000 <= prev+100)){
+            
               console.log(min*60*1000+" "+prev)
              clearInterval(timer)
              alert(`${min} minutes completed`)
@@ -116,7 +119,7 @@ function Stopwatch(){
               return prev;
             }
             // return prev+100;
-             return prev+10
+             return Date.now()-tracker
           });
          
         }, 10);
@@ -129,11 +132,12 @@ function Stopwatch(){
       <>
       <div>
         <input type="number"  value={min} onChange={handleChange}/>
+        <label htmlFor="input"> Do you also need coundown</label>
         <input value={isCountDown} checked={isCountDown} type="checkbox" onChange={()=>setIsCountDown(prev=>!prev)}/>
         <h1>{format(start)}</h1>
          
         <h1>hh:mm:ss:ms</h1>
-        <h3>{min}</h3>
+        <h3>{ isCountDown && (min*1000*60)-(start)>0 && format((min*1000*60)-(start))}</h3>
         <button onClick={startWatch}>start</button>
         <button onClick={pause}>pause</button>
         <button onClick={()=>setStart(0)}>Reset </button>
