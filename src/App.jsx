@@ -1,7 +1,7 @@
 import { useState,useRef, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+ 
+ import './App.css'
+ 
 var length = 5;
 const styles ={
   input:{
@@ -47,8 +47,26 @@ function App() {
       ))
      }
      <button onClick={(e)=>submit(e)}>Submit</button>
+     <Progress />
     </>
   )
+}
+function Progress() {
+  const [progress, setProgress] = useState(60); // Initial progress (30%)
+  const handleChange = (e) => {
+    let value = Number(e.target.value);
+    if (value < 0) value = 0; // Prevent negative values
+    if (value > 100) value = 100; // Limit progress to 100%
+    setProgress(value);
+  };
+  return (
+    <>
+    <input value={progress} onChange={handleChange} />
+    <div className="progress-container">
+      <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+    </div>
+    </>
+  );
 }
 
 export default App
