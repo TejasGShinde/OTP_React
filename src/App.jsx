@@ -77,6 +77,7 @@ function App() {
       })
      }
      <SlideShow />
+     <Pagination />
     </>
   )
 }
@@ -115,8 +116,8 @@ function Stopwatch(){
     }
     const format = (start)=>{
           let sec = Math.floor(start/1000);
-          let mi =Math.floor( sec/60);
-          let hr = Math.floor(min/60);
+          let mi =Math.floor( sec/60)%60;
+          let hr = Math.floor(min/60)%24;
           let ms = (start%1000)
           sec = sec%60
           return `${hr.toString().slice(0,3).padStart(2,0)}:${mi.toString().padStart(2,0)}:${sec.toString().padStart(2,0)}:${ms.toString().padStart(3,0)}`
@@ -218,6 +219,74 @@ useEffect(()=>{
 },[])
   return (
     <div>{show[index]}</div>
+  )
+}
+
+
+function Pagination(){
+  let limit=5;
+   const [data,setData] = useState([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
+   const [pageData,setPageData] = useState(data)
+   const [index,setIndex]= useState(0);
+   const sliceData = (index)=>{
+        setPageData(data.slice(index,limit+index))
+   }
+const next = ()=>{
+  if (index + limit >= data.length) {
+    alert("No more elements");
+    return;
+  }
+
+  setIndex(prev=>prev+limit);
+  sliceData(index+limit)
+}
+
+const prev = ()=>{
+  if(index<=0){
+    alert("you are already on first pages");
+    return;
+  }
+  setIndex(prev=>prev-limit);
+  sliceData(index-limit)
+}
+  //  const next = (e)=>{
+  //   if(e.target.value ==="prev" && index>0){
+  //     setIndex(prev=>Math.max(0,prev-limit))
+  //   }
+  //   else{
+  //     setIndex(prev=>prev+limit)
+  //   }
+  
+  //   console.log(index)
+  //   if(index>=data.length){
+  //     alert("no more elements")
+  //     return;
+  //   }
+  //   setPageData((prev)=>{
+     
+  //     if(index+limit>=data.length){
+  //       console.log("in if")
+  //       return data.slice(index,data.length-1);
+  //     }
+  //     else{
+  //       console.log("in else")
+  //        return  data.slice(index,index+limit);
+  //     }
+    
+  //   })
+    
+  //  }
+   
+  return (
+    <>
+    {
+      pageData && pageData.map((item,index)=>{
+        return <h4 key={index}>No. {item}</h4>
+      })
+    }
+    <button value="prev" onClick={prev}>prev</button>
+    <button onClick={next}>next</button>
+    </>
   )
 }
 
