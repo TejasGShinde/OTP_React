@@ -226,11 +226,14 @@ useEffect(()=>{
 function Pagination(){
   let limit=5;
    const [data,setData] = useState([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
-   const [pageData,setPageData] = useState(data)
+   const [pageData,setPageData] = useState(data.slice(0,limit))
    const [index,setIndex]= useState(0);
-   const sliceData = (index)=>{
-        setPageData(data.slice(index,limit+index))
-   }
+  //  const sliceData = (index)=>{
+  //       setPageData(data.slice(index,limit+index))
+  //  }
+  useEffect(()=>{
+    setPageData(data.slice(index,limit+index))
+  },[index,data])
 const next = ()=>{
   if (index + limit >= data.length) {
     alert("No more elements");
@@ -238,7 +241,7 @@ const next = ()=>{
   }
 
   setIndex(prev=>prev+limit);
-  sliceData(index+limit)
+  //sliceData(index+limit)
 }
 
 const prev = ()=>{
@@ -247,7 +250,7 @@ const prev = ()=>{
     return;
   }
   setIndex(prev=>prev-limit);
-  sliceData(index-limit)
+  //sliceData(index-limit)
 }
   //  const next = (e)=>{
   //   if(e.target.value ==="prev" && index>0){
