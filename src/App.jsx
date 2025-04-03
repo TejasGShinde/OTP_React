@@ -10,6 +10,28 @@ const styles ={
     margin:'5px'
   }
 }
+const todo =[
+  {
+  title:"title 1",
+  description:"this is descrtption of 1"
+},
+{
+  title:"title 2",
+  description:"this is descrtption of 2"
+},
+{
+  title:"title 3",
+  description:"this is descrtption of 3"
+},
+{
+  title:"title 4",
+  description:"this is descrtption of 4"
+},
+{
+  title:"title 5",
+  description:"this is descrtption of 5"
+},
+]
 function App() {
    
   const [inputArr,setInputArr] = useState(new Array(length).fill(1));
@@ -49,6 +71,12 @@ function App() {
      <button onClick={(e)=>submit(e)}>Submit</button>
      <Progress />
      <Stopwatch />
+     {
+      todo.map((item,index)=>{
+        return <Accordian key={index} title={item.title} description={item.description} />
+      })
+     }
+     <SlideShow />
     </>
   )
 }
@@ -118,7 +146,7 @@ function Stopwatch(){
               pause()
               return prev;
             }
-            // return prev+100;
+            // return prev+10;
              return Date.now()-tracker
           });
          
@@ -152,4 +180,47 @@ function Stopwatch(){
     )
 }
 
+
+function Accordian(props){
+ const [expand,setExpand] = useState(false);
+  console.log(props)
+  return (
+     <>
+     <div className="title" onClick={()=>setExpand((prev)=>!prev)}>
+          <span>{props.title}</span>
+     </div>
+     {expand && <div className="description">
+            <span>This is of {props.description}</span>
+      </div>}
+     
+     </>
+  )
+}
+
+function SlideShow(){
+  const [show,setShow] = useState(["this is first","second","third","fourth"])
+  const [index,setIndex] = useState(0);
+useEffect(()=>{
+ const timer = setInterval(()=>{
+  console.log(index)
+  setIndex((prev)=>{
+      if(prev ===show.length-1){
+        return 0;
+      }
+      else{
+        return prev+1;
+      }
+  })
+
+ },1000)
+
+ return ()=>clearInterval(timer);
+},[])
+  return (
+    <div>{show[index]}</div>
+  )
+}
+
 export default App
+
+
