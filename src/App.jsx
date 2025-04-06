@@ -77,7 +77,11 @@ function App() {
       })
      }
      <SlideShow />
-     <Pagination />
+     {/* <Pagination /> */}
+     <Forms />
+     <EmiCalculator />
+     <NestedCheakList />
+     <StarRating />
     </>
   )
 }
@@ -287,12 +291,275 @@ const prev = ()=>{
         return <h4 key={index}>No. {item}</h4>
       })
     }
-    <button value="prev" onClick={prev}>prev</button>
-    <button onClick={next}>next</button>
+    <button disabled={index<=0} value="prev" onClick={prev}>prev</button>
+    <button disabled={index+limit>=data.length} onClick={next}>next</button>
     </>
   )
 }
 
+
+function EmiCalculator(){
+  const [price,setPrice] = useState(0);
+  const [intrest,setIntrest] = useState(0);
+  const [months,setMonths] = useState(0);
+  const [result,setResult] = useState(0)
+  useEffect(()=>{
+    let cal = (intrest/100)*price;
+    cal = cal/12;
+       setResult(cal)
+  },[months,price,intrest])
+  return (
+
+    <>
+     <h2>Emi Calculator</h2>
+     <label htmlFor="price">Price </label>
+     <input id='price' type="number" value={price} onChange={(e)=>setPrice(e.target.value)}/>
+     <label htmlFor="intrest">Intrest</label>
+     <input id='intrest' type="number" value={intrest} onChange={(e)=>setIntrest(e.target.value)}/>
+     <label htmlFor="months">Months</label>
+     <input type="number" value={months} onChange={(e)=>setMonths(e.target.value)}/>
+
+     <button  >Calculate</button>
+     <h3>Your monthly payment will be Rs.{result}</h3>
+    </>
+  )
+}
+
+function Forms(){
+ 
+  const [index,setIndex]= useState(0);
+   const [formData,setFormData] = useState([
+    {
+      name:"",
+      surname:"",
+      age:0
+    },
+    {
+      subject:"",
+      year:0,
+      div:""
+    },
+    {
+       city:"",
+       state:"",
+       country:""
+    }
+   ])
+   const handleEnter = (e)=>{
+      console.log(e.key)
+    //in this approch difficult to handle the enter condition as index is for the parent object and not the entity so for that you have to think about that or change that approch i guess   
+   }
+   const handleForm = (e, subItem) => {
+    // let updatedForm = [...formData];
+    // updatedForm[index][subItem] = e.target.value;
+    // setFormData(updatedForm)
+    setFormData((prev)=>{
+      let updatedForm = [...prev];
+      updatedForm[index] = { ...updatedForm[index], [subItem]: e.target.value };//for object also you need new as the refrance problem if you try to update the earlier one "React may not detect the change properly."
+      return updatedForm;
+    })
+  };
+   const prev = ()=>{
+    setIndex(prev=>prev-1);
+    //sliceData(index-limit)
+  }
+  const next = ()=>{
+    setIndex(prev=>prev+1);
+  }
+  return (
+    <>
+     <form>
+     {formData.slice(index,index+1).map((item)=>{
+      return Object.keys(item).map((subItem)=>{
+        return <input className='formInputs' placeholder={subItem} type='text' onKeyDown={handleEnter} value={item[subItem]} key={subItem+"R"}  onChange={(e) => handleForm(e, subItem)}/>
+       })
+     })}
+      
+     </form>
+     <button disabled={index<=0} value="prev" onClick={prev}>prev</button>
+      <button disabled={index+1>=formData.length} onClick={next}>next</button>
+     <h1>{formData.map((item)=>{
+      return Object.keys(item).map((subItem)=>{
+        return <p key={subItem+"R"}>{subItem}:{item[subItem]}</p>
+      })
+     })}</h1>
+    </>
+  )
+}
+
+function NestedCheakList( ){
+const [data,setData] = useState([
+  {
+    id: 1,
+    label: "Fruits",
+    checked: false,
+    children: [
+      { id: 2, label: "Apple", checked: false },
+      { id: 3, label: "Banana", checked: false },
+      {
+        id: 4,
+        label: "Citrus",
+        checked: false,
+        children: [
+          { id: 5, label: "Orange", checked: false },
+          { id: 6, label: "Lemon", checked: false }
+        ]
+      }
+    ]
+  },
+  {
+    id: 7,
+    label: "Vegetables",
+    checked: false,
+    children: [
+      { id: 8, label: "Carrot", checked: false },
+      {
+        id: 9,
+        label: "Leafy Greens",
+        checked: false,
+        children: [
+          { id: 10, label: "Spinach", checked: false },
+          { id: 11, label: "Lettuce", checked: false }
+        ]
+      }
+    ]
+  },
+  {
+    id: 12,
+    label: "Dairy",
+    checked: true,
+    children: [
+      { id: 13, label: "Milk", checked: false },
+      { id: 14, label: "Cheese", checked: false }
+    ]
+  }
+])
+const handleChange = (id,checked)=>{
+  // console.log(e.target.checked)
+  // setData((prev)=>{
+  //   const newPrev = [...prev];
+  //   newPrev[index].checked = e.target.checked;
+  //   return newPrev;
+  // })
+  const updateTree = (item) =>
+    item.map((item) => {
+      if (item.id === id) {
+        // if(item.children && checked===true){
+        //   item.children.map((subItem)=>subItem.checked=true )
+        // }
+        console.log("this is in item"+id+item.label)
+        return {
+          ...item,
+          checked:checked,
+          children: item.children ? updateTree(item.children) : []
+        };
+      }
+      if (item.children ) {
+                  
+        console.log("this is in children"+id+item.label)
+        // if(item.children && checked===true){
+        //   item.children.map((subItem)=>subItem.checked=true )
+        // }
+        return {
+          ...item,
+           
+          children: updateTree(item.children)
+        };
+      }
+      return item;
+    });
+
+  setData((prev) => updateTree(prev));
+}
+useEffect(()=>{
+  console.log(data)
+},[data])
+  return (
+    <>
+     {
+        data && data.map((item,index)=>{
+          return <CheakList key={item.id} item={item} handleChange={handleChange} index={index}/>
+        })
+     }
+    </>
+  )
+
+
+}
+
+function CheakList(props){
+   const [expand,setExpnad] = useState(false);
+
+   return (
+    <>
+      <div className="parent" >
+            <label htmlFor="parent" onClick={()=>setExpnad((prev)=>!prev)}>{props.item.label}</label>
+             <input   key={props.item.id} type="checkbox"   checked={props.item.checked} onChange={(e)=>props.handleChange(props.item.id,e.target.checked,props.item)} /></div>
+             {/* <div  className="child"  style={{margin:'20px',display:'flex',flexDirection:'column'}}> {expand && props.item.children.map((subItem,subIndex)=>{
+                return    <input     key={subItem.id} type="checkbox"   checked={subItem.checked} onChange={(e)=>props.handleChange(subItem.id,e.target.checked)} />
+               })} </div> */}
+                  <div className="parent" >
+                     {props.item.children && expand &&
+            props.item.children.map((child) => (
+              <CheakList
+                key={child.id}
+                item={child}
+                handleChange={props.handleChange}
+              />
+            ))}
+            </div>
+    </>
+   )
+}
+var starCount =5;
+function StarRating(){
+//   In React state updates: don’t mutate existing objects/arrays, always return new copies (especially nested ones).
+// That’s why .map() + spread operator is the go-to approach here.
+// setAllRatings((prev)=>{
+//   const newRating = [...prev]; // ✅ new array (good)
+//   newRating.map((item)=>item.id<=id?item.isCheaked=true:true); // ❌ mutates existing objects
+//   return newRating;
+// });
+// Even though newRating is a new array:
+// Each item inside it is still the same object as before (item is not cloned).
+// And you're mutating those objects (item.isCheaked = true).
+// So React doesn’t know anything changed (especially if the object reference is the same).
+
+  const [allRatings,setAllRatings] = useState([{id:1,isCheaked:false},{id:2,isCheaked:false},{id:3,isCheaked:false},{id:4,isCheaked:false},{id:5,isCheaked:false}]);
+  const [isHover,setIsHover] = useState(0);
+  const handleClick =(e,id)=>{
+    console.log(id)
+    setAllRatings((prev) =>
+      prev.map((item) => ({
+        ...item,  
+        isCheaked: item.id <= id 
+      }))
+    );
+  }
+  const onHover = (id)=>{
+     setIsHover(id)
+  }
+  const clear = ()=>{
+    setAllRatings((prev)=>
+    prev.map((item)=>({...item,isCheaked:false}))
+    )
+  }
+  const [rating,setRating] = useState(0);
+  return (
+    <>
+     
+     {allRatings.map((item,index)=>{
+      return <span key={item.id} className={`fa fa-star ${item.isCheaked || item.id<=isHover?"cheaked":""}`} onMouseOver={()=>onHover(item.id)} onMouseOut={()=>setIsHover(0)} onClick={(e)=>handleClick(e,item.id)}> </span>
+     })}
+     <button onClick={clear}>clear</button>
+    </>
+  )
+}
+// If the array reference is new, React will notice a potential change.
+
+// But for internal updates, the objects themselves must also be new references (if they’ve changed).
+
+// Just changing the array without touching object references won’t trigger a proper re-render.
 export default App
 
 

@@ -78,3 +78,15 @@ h1{
    left: 30px;
    
 }
+.formInputs{
+  align-self: center;
+  margin: 10px;
+}
+.parent{
+  padding-left: 40px;
+ 
+  width: fit-content;
+}
+.cheaked{
+  color: red;
+}
