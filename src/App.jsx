@@ -32,6 +32,60 @@ const todo =[
   description:"this is descrtption of 5"
 },
 ]
+
+const fileExplorerData = {
+  name: "react-utilities-playground",
+  isFolder: true,
+  children: [
+    {
+      name: "public",
+      isFolder: true,
+      children: [
+        { name: "index.html", isFolder: false },
+      ],
+    },
+    {
+      name: "src",
+      isFolder: true,
+      children: [
+        {
+          name: "components",
+          isFolder: true,
+          children: [
+            { name: "Stopwatch.jsx", isFolder: false },
+            { name: "ProgressBar.jsx", isFolder: false },
+            { name: "Accordion.jsx", isFolder: false },
+            { name: "SlideShow.jsx", isFolder: false },
+            { name: "Pagination.jsx", isFolder: false },
+            { name: "EMIcalculator.jsx", isFolder: false },
+            {
+              name: "FormStepper",
+              isFolder: true,
+              children: [
+                { name: "FormStepper.jsx", isFolder: false },
+                { name: "StepOne.jsx", isFolder: false },
+                { name: "StepTwo.jsx", isFolder: false },
+                { name: "StepThree.jsx", isFolder: false },
+              ],
+            },
+            { name: "OTPInput.jsx", isFolder: false },
+          ],
+        },
+        { name: "App.jsx", isFolder: false },
+        { name: "index.js", isFolder: false },
+        {
+          name: "styles",
+          isFolder: true,
+          children: [
+            { name: "global.css", isFolder: false },
+          ],
+        },
+      ],
+    },
+    { name: "package.json", isFolder: false },
+    { name: "README.md", isFolder: false },
+  ],
+};
 function App() {
    
   const [inputArr,setInputArr] = useState(new Array(length).fill(1));
@@ -82,6 +136,7 @@ function App() {
      <EmiCalculator />
      <NestedCheakList />
      <StarRating />
+     <FileExplorer fileExplorerData={fileExplorerData} />
     </>
   )
 }
@@ -529,10 +584,11 @@ function StarRating(){
   const [isHover,setIsHover] = useState(0);
   const handleClick =(e,id)=>{
     console.log(id)
+
     setAllRatings((prev) =>
       prev.map((item) => ({
         ...item,  
-        isCheaked: item.id <= id 
+        isCheaked:id===1 &&item.checked?false: item.id <= id 
       }))
     );
   }
@@ -560,6 +616,27 @@ function StarRating(){
 // But for internal updates, the objects themselves must also be new references (if they’ve changed).
 
 // Just changing the array without touching object references won’t trigger a proper re-render.
+
+function FileExplorer({fileExplorerData}){
+const [expand,setExpand] = useState(false)
+  return (
+    <>
+    {
+      
+        <div>
+       <span onClick={()=>setExpand(prev=>!prev)} style={{cursor:"pointer","padding-left":"10px"}}> {(fileExplorerData.isFolder? '📁':'📄' )+fileExplorerData.name}</span>  
+       </div>
+      
+    }
+    {
+     expand && fileExplorerData?.children?.map((child,index)=>{
+        return <FileExplorer key={index} fileExplorerData={child} />
+      })
+    }
+    </>
+  )
+}
+
 export default App
 
 
