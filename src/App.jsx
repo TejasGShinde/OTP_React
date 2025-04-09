@@ -489,43 +489,41 @@ const [data,setData] = useState([
     ]
   }
 ])
-const handleChange = (id,checked)=>{
-  // console.log(e.target.checked)
-  // setData((prev)=>{
-  //   const newPrev = [...prev];
-  //   newPrev[index].checked = e.target.checked;
-  //   return newPrev;
-  // })
-  const updateTree = (item) =>
-    item.map((item) => {
-      if (item.id === id) {
-        // if(item.children && checked===true){
-        //   item.children.map((subItem)=>subItem.checked=true )
-        // }
-        console.log("this is in item"+id+item.label)
-        return {
-          ...item,
-          checked:checked,
-          children: item.children ? updateTree(item.children) : []
-        };
-      }
-      if (item.children ) {
-                  
-        console.log("this is in children"+id+item.label)
-        // if(item.children && checked===true){
-        //   item.children.map((subItem)=>subItem.checked=true )
-        // }
-        return {
-          ...item,
-           
-          children: updateTree(item.children)
-        };
-      }
-      return item;
-    });
+const handleChange = (item,checked)=>{
+      
+  setData((prev)=>{
+    const newData = [...prev];
 
-  setData((prev) => updateTree(prev));
+    const updateCheaked = (item,checked)=>{
+      item.checked =checked;
+      if(item.children){
+        item.children.forEach((subItem)=>{
+                 updateCheaked(subItem,checked);
+        })
+      }
+    }
+    const updateParent = (node)=>{
+      console.log(node.label)
+      if(node.children){
+        const cheakAll = node.children.every((child)=> {
+          return child.checked;
+        })
+        console.log(cheakAll)
+        node.checked = cheakAll;
+      }
+    }
+     updateCheaked(item,checked);
+     newData.map((node)=>{
+      updateParent(node);
+      if(node.children){
+        node.children.forEach((subItem)=>updateParent(subItem))
+      }
+     })
+    return newData;
+  })
+
 }
+   
 useEffect(()=>{
   console.log(data)
 },[data])
@@ -533,7 +531,7 @@ useEffect(()=>{
     <>
      {
         data && data.map((item,index)=>{
-          return <CheakList key={item.id} item={item} handleChange={handleChange} index={index}/>
+          return <CheakList key={item.id} item={item} handleChange={handleChange}  />
         })
      }
     </>
@@ -542,26 +540,16 @@ useEffect(()=>{
 
 }
 
-function CheakList(props){
+function CheakList({item,handleChange}){
    const [expand,setExpnad] = useState(false);
 
    return (
     <>
       <div className="parent" >
-            <label htmlFor="parent" onClick={()=>setExpnad((prev)=>!prev)}>{props.item.label}</label>
-             <input   key={props.item.id} type="checkbox"   checked={props.item.checked} onChange={(e)=>props.handleChange(props.item.id,e.target.checked,props.item)} /></div>
-             {/* <div  className="child"  style={{margin:'20px',display:'flex',flexDirection:'column'}}> {expand && props.item.children.map((subItem,subIndex)=>{
-                return    <input     key={subItem.id} type="checkbox"   checked={subItem.checked} onChange={(e)=>props.handleChange(subItem.id,e.target.checked)} />
-               })} </div> */}
-                  <div className="parent" >
-                     {props.item.children && expand &&
-            props.item.children.map((child) => (
-              <CheakList
-                key={child.id}
-                item={child}
-                handleChange={props.handleChange}
-              />
-            ))}
+            <input type="checkbox" key={item.id} checked={item.checked} onChange={(e)=>handleChange(item,e.target.checked)}/>
+            {item.children?.map((subItem,index)=>{
+              return <CheakList key={subItem.id} handleChange={handleChange} item={subItem} />
+            })}
             </div>
     </>
    )
@@ -623,7 +611,7 @@ const [expand,setExpand] = useState(false)
     <>
     {
       
-        <div>
+        <div style={{cursor:"pointer","padding-left":"10px"}}>
        <span onClick={()=>setExpand(prev=>!prev)} style={{cursor:"pointer","padding-left":"10px"}}> {(fileExplorerData.isFolder? '📁':'📄' )+fileExplorerData.name}</span>  
        </div>
       
