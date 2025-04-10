@@ -137,6 +137,7 @@ function App() {
      <NestedCheakList />
      <StarRating />
      <FileExplorer fileExplorerData={fileExplorerData} />
+     <NestedComments />
     </>
   )
 }
@@ -624,7 +625,105 @@ const [expand,setExpand] = useState(false)
     </>
   )
 }
+function NestedComments(){
+  const [comments,setComments] = useState([]);
+  const [newComment,setNewComment]= useState({
+    id:0,
+    content:"",
+    children:[]
+  });
+  const [replyComment,setReplyComment] = useState("");
 
+  const handleChange =(value)=>{
+    console.log(value)
+    
+    setNewComment(prev=>{
+      const newObj = { id:Date.now(),
+        content:value,
+        children:[]}
+        return newObj;
+    }
+    
+  );
+  }
+  const addComment =()=>{
+    console.log(newComment)
+   setComments((prev)=>{
+    const newState = [...prev,newComment];
+    return newState;
+   })
+    setNewComment({id:"",content:"",children:[]})
+  }
+  const handleReply = (value)=>{
+    setReplyComment(value);
+  }
+  const addReply = (parentId)=>{
+    if(!replyComment.trim())return;
+   const newReply = {
+    id:Date.now(),
+    content:replyComment,
+    children:[]
+   }
+    const updateComment = (items)=>{
+      return items?.map((item)=>{
+        if(item.id === parentId){
+           return {...item, children:[...item.children,newReply]}
+        }
+        if(item.children){
+          return {...item,children:updateComment(item.children)};
+        }
+        return item;
+      })
+    }
+    setComments((prev)=>updateComment(prev));
+    setReplyComment("");
+  }
+  useEffect(()=>{
+    console.log(comments)
+  },[comments])
+  return (
+    <>
+      <Comments comments={comments}  replyComment={replyComment} setReplyComment={setReplyComment} handleReply={handleReply} addReply={addReply} />
+    <div>
+      <input key={comments?.length+"r"} type="text" placeholder="add new comment" value={newComment !== null?newComment.content:""} onChange={(e)=>handleChange(e.target.value)} />
+      <button onClick={()=>{addComment()}}>Add</button>
+    </div>
+    </>
+  )
+}
+
+function Comments({comments,replyComment,handleReply,addReply,setReplyComment}){
+ const [replyTo,setReplyTo] = useState(null)
+
+
+  return (
+    <>
+    <div>
+      {comments?.map((item,index)=>{
+        return <div key={item.id}>
+          <div>
+          <span>{item.content}</span>
+          <button onClick={()=>setReplyTo(item.id)}>Reply</button>
+          </div>
+           {
+            item.id === replyTo  && 
+            <div>
+              <input key={index+"W"} type="text" value={replyComment} placeholder="add a reply" onChange={(e)=>handleReply(e.target.value)} />
+              <button onClick={()=>{addReply(replyTo);setReplyTo(null)}}>Submit Reply</button>
+            </div>
+           }
+           {item.children?.length > 0 && 
+           <div style={{marginLeft:"20px",padding:"10px"}}>
+                    {<Comments comments={item.children}  replyComment={replyComment} setReplyComment={setReplyComment} handleReply={handleReply} addReply={addReply}  />}
+            </div>
+            }
+        </div>
+      })}
+    </div>
+    </>
+  )
+}
 export default App
 
 
+ 
