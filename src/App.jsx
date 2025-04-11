@@ -1,5 +1,5 @@
-import { useState,useRef, useEffect, use } from 'react'
- 
+import { useState,useRef, useEffect, useContext } from 'react'
+ import {cartContext} from "./Context/MyCart"
  import './App.css'
  
 var length = 5;
@@ -10,6 +10,7 @@ const styles ={
     margin:'5px'
   }
 }
+
 const todo =[
   {
   title:"title 1",
@@ -87,7 +88,45 @@ const fileExplorerData = {
   ],
 };
 function App() {
-   
+  const [products,setProducts] = useState([
+    {
+      name:"Iphne",
+      quantity:10,
+      price:799,
+      id:1
+    },
+    {
+      name:"Redmij",
+      quantity:18,
+      price:299,
+      id:2
+    },
+    {
+      name:"Oppo",
+      quantity:23,
+      price:399,
+      id:3
+    },
+    {
+      name:"vivo",
+      quantity:7,
+      price:599,
+      id:4
+    },
+    {
+      name:"Samsung",
+      quantity:11,
+      price:699,
+      id:5
+    },
+    {
+      name:"RealMe",
+      quantity:15,
+      price:99,
+      id:6
+    }
+    
+  ])
   const [inputArr,setInputArr] = useState(new Array(length).fill(1));
   const inputRef = useRef([])
   useEffect(()=>{
@@ -138,6 +177,13 @@ function App() {
      <StarRating />
      <FileExplorer fileExplorerData={fileExplorerData} />
      <NestedComments />
+     
+     {
+      products?.map((product,index)=>{
+        return <Cart item={product} key={product.id} />
+      })
+     }
+     <AutoComplete />
     </>
   )
 }
@@ -708,7 +754,7 @@ function Comments({comments,replyComment,handleReply,addReply,setReplyComment}){
            {
             item.id === replyTo  && 
             <div>
-              <input key={index+"W"} type="text" value={replyComment} placeholder="add a reply" onChange={(e)=>handleReply(e.target.value)} />
+              <input key={index} type="text" value={replyComment} placeholder="add a reply" onChange={(e)=>handleReply(e.target.value)} />
               <button onClick={()=>{addReply(replyTo);setReplyTo(null)}}>Submit Reply</button>
             </div>
            }
@@ -723,6 +769,44 @@ function Comments({comments,replyComment,handleReply,addReply,setReplyComment}){
     </>
   )
 }
+
+function AutoComplete(){
+  const [todo,setTodo] = useState(null);
+   const handleChange = (value)=>{
+    
+   }
+  useEffect(()=>{
+     fetch("https://jsonplaceholder.typicode.com/todos").then((res)=>res.json()).then((data)=>setTodo(data)).catch((error)=>console.log(error))
+  },[])
+
+  return (
+    <>
+    <input type="text" onChange={(e)=>handleChange(e.target.value)} />
+    {todo && todo.map((item,index)=>{
+      return <div> <span key={item.id}>{item.title}</span> </div>
+    })}
+    </>
+  )
+}
+
+function Cart({item}){
+
+   const {cart,handleCart} = useContext(cartContext);
+  return (
+    <>
+      <div style={{display:"flex",flexDirection:"column",fontWeight:"bold",alignItems:"center",justifyItems:"center",justifyContent:"center"}}>
+        <div style={{border:"solid 0.5px blue",width:"400px",padding:"20px",display:"flex",flexDirection:"column",fontWeight:"bold",alignItems:"center",justifyItems:"center",justifyContent:"center"}}>
+        <span>Name:{item.name}</span>
+        <span>Quantity:{item.quantity}</span>
+        <span>Price:${item.price}</span>
+        <span>cart Items:{cart.length}</span>
+        </div>
+        <button onClick={()=>{handleCart(item)}}>Add to card</button>
+      </div>
+    </>
+  )
+}
+
 export default App
 
 
