@@ -1,9 +1,4 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+ 
 
 .logo {
   height: 6em;
@@ -76,4 +71,32 @@ h1{
 }
 .cheaked{
   color: gold;
+}
+.images{
+  width: 150px;
+  height: 150px;
+  border-radius: 3px;
+  margin :5px
+}
+.image-container{
+  display: flex;
+  flex-direction: column;
+}
+.drop-table{
+  border: dotted 2px;
+ padding: 50px;
+ width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+.active{
+   background-color: #888;
+}
+img{
+  width: 100px;
+  height: 50px;
+  border-radius: 3px;
+  margin :5px
 }
