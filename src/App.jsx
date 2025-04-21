@@ -4,6 +4,7 @@ import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { addToCard } from './Redux/cartSlice';
 import pdfIcon from './assets/pdf.png'   
+ 
 var length = 5;
 const styles = {
   input: {
@@ -160,6 +161,7 @@ function App() {
   }
   return (
     <>
+    <GridLight />
       {inputArr &&
         inputArr.map((input, index) => (
           <input className='input' value={input} key={index} style={styles.input} ref={input => { inputRef.current[index] = input }} onKeyDown={(e) => removeValue(e, index)} type='text' onChange={(e) => handleOnChange(e, index)} />
@@ -972,6 +974,76 @@ function Files({ data }) {
           </div>
         })}
       </div>
+    </>
+  )
+}
+
+
+function GridLight() {
+  const [grids, setGrids] = useState(new Array(9).fill(1));
+  const [queue, setQueue] = useState([]);
+  const [isComplete,setIsComplete] = useState(false);
+
+  const handleClick = (index) => {
+    setGrids((prevGrids) =>
+      prevGrids.map((item, i) => {
+        if (i === index && item === 1) {
+          setQueue((prevQueue) => [...prevQueue, index]);
+          if(queue.length ===8){
+            console.log(isComplete)
+            setIsComplete(true);
+          }
+          return 0;
+        }
+        return item;
+      })
+    );
+  };
+
+  useEffect(() => {
+    let timer;
+   if(queue.length <1){
+    setIsComplete(false);
+   }
+    if (isComplete) {
+      timer = setTimeout(() => {
+        const last = queue[queue.length - 1];
+
+        setGrids((prevGrids) =>
+          prevGrids.map((item, index) => (index === last ? 1 : item))
+        );
+
+        setQueue((prevQueue) => prevQueue.slice(0, -1));
+      }, 500);
+    }
+
+    return () => clearTimeout(timer);
+  }, [queue]);
+
+  return (
+    <div className="container">
+      {grids.map((grid, index) => (
+        <div
+          className={`grid ${grid === 0 ? 'active' : ''}`}
+          key={index}
+          onClick={() => handleClick(index)}
+        >
+          {grid}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+function Debounce(){
+
+  return (
+
+    <>
+    <div>
+      
+    </div>
     </>
   )
 }
